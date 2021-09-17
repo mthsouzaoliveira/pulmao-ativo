@@ -3,27 +3,33 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { FontAwesome } from '@expo/vector-icons';
+import {
+  MaterialIcons, Ionicons, FontAwesome, Entypo, MaterialCommunityIcons,
+} from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
+import { useContext } from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
 
 import Colors from '../constants/Colors';
+import AuthContext from '../contexts/auth';
 import useColorScheme from '../hooks/useColorScheme';
-import ModalScreen from '../screens/ModalScreen';
+import Confirmation from '../screens/Confirmation';
+import Exercise from '../screens/Exercise';
+import Exercises from '../screens/Exercises';
 import NotFoundScreen from '../screens/NotFoundScreen';
-import TabOneScreen from '../screens/TabOneScreen';
-import TabTwoScreen from '../screens/TabTwoScreen';
+import Page from '../screens/Page';
+import UserIdentification from '../screens/UserIdentification';
+import Welcome from '../screens/Welcome';
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from '../types';
-import LinkingConfiguration from './LinkingConfiguration';
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
     <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+    >
       <RootNavigator />
     </NavigationContainer>
   );
@@ -36,13 +42,26 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
+  const { signed } = useContext(AuthContext);
+
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
-      <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
-      </Stack.Group>
+    <Stack.Navigator screenOptions={{
+      headerShown: false,
+    }}
+    >
+      <Stack.Screen name="Welcome" component={Welcome} />
+      {!signed ? (
+        <>
+          <Stack.Screen name="UserIdentification" component={UserIdentification} />
+          <Stack.Screen name="Confirmation" component={Confirmation} options={{ headerShown: false }} />
+        </>
+      ) : (
+        <>
+          <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
+          <Stack.Screen name="Exercise" component={Exercise} options={({ navigation, route }) => ({ title: route.params.title, headerShown: true, headerLeft: () => back(navigation) })} />
+          <Stack.Screen name="NotFound" component={NotFoundScreen} options={{ title: 'Oops!' }} />
+        </>
+      )}
     </Stack.Navigator>
   );
 }
@@ -58,50 +77,88 @@ function BottomTabNavigator() {
 
   return (
     <BottomTab.Navigator
-      initialRouteName="TabOne"
+      initialRouteName="Exercises"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme].tint,
-      }}>
+      }}
+    >
+
       <BottomTab.Screen
-        name="TabOne"
-        component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<'TabOne'>) => ({
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Pressable
-              onPress={() => navigation.navigate('Modal')}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}>
-              <FontAwesome
-                name="info-circle"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </Pressable>
-          ),
+        name="Exercises"
+        component={Exercises}
+        options={({ navigation }: RootTabScreenProps<'Exercises'>) => ({
+          headerTransparent: true,
+          headerTitle: '',
+          tabBarLabel: 'Exercícios',
+          tabBarIcon: ({ color, size }) => <MaterialCommunityIcons name="account-heart-outline" size={size} color={color} />,
         })}
       />
+
       <BottomTab.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-        }}
+        name="Symptoms"
+        component={Page}
+        initialParams={{ title: 'Sintomas' }}
+        options={({ navigation }: RootTabScreenProps<'Symptoms'>) => ({
+          headerTitle: '',
+          tabBarLabel: 'Sintomas',
+          tabBarIcon: ({ color, size }) => <FontAwesome name="thermometer-three-quarters" size={size} color={color} />,
+          headerLeft: () => back(navigation),
+        })}
+      />
+
+      <BottomTab.Screen
+        name="Diagnosis"
+        component={Page}
+        initialParams={{ title: 'Diagnóstico' }}
+        options={({ navigation }: RootTabScreenProps<'Diagnosis'>) => ({
+          headerTitle: '',
+          tabBarLabel: 'Diagnóstico',
+          tabBarIcon: ({ color, size }) => <Entypo name="magnifying-glass" size={size} color={color} />,
+          headerLeft: () => back(navigation),
+        })}
+      />
+
+      <BottomTab.Screen
+        name="Prevention"
+        component={Page}
+        initialParams={{ title: 'Prevenção' }}
+        options={({ navigation }: RootTabScreenProps<'Prevention'>) => ({
+          headerTitle: '',
+          tabBarLabel: 'Prevenção',
+          tabBarIcon: ({ color, size }) => <Ionicons name="shield-outline" size={size} color={color} />,
+          headerLeft: () => back(navigation),
+        })}
+      />
+
+      <BottomTab.Screen
+        name="Covid"
+        component={Page}
+        initialParams={{ title: 'Covid-19' }}
+        options={({ navigation }: RootTabScreenProps<'Covid'>) => ({
+          headerTitle: '',
+          tabBarLabel: 'Sobre Covid-19',
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="coronavirus" size={size} color={color} />,
+          headerLeft: () => back(navigation),
+        })}
       />
     </BottomTab.Navigator>
   );
 }
 
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={30} style={{ marginBottom: -3 }} {...props} />;
+function back(navigation) {
+  return (
+    <Pressable
+      onPress={() => navigation.navigate('Exercises')}
+      style={({ pressed }) => ({
+        opacity: pressed ? 0.5 : 1,
+      })}
+    >
+      <FontAwesome
+        name="chevron-left"
+        size={25}
+        color={Colors.light.tint}
+        style={{ marginRight: 15, marginLeft: 15 }}
+      />
+    </Pressable>
+  );
 }

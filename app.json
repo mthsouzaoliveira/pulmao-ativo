@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "pulmao-ativo",
-    "slug": "pulmao-ativo",
+    "name": "pulmao-ativo-test",
+    "slug": "pulmao-ativo-test",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,16 +19,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mthsouzaoliveira.pulmaoativotest"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mthsouzaoliveira.pulmaoativotest"
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
-    }
+    },
+    "description": ""
   }
 }

@@ -1,0 +1,65 @@
+{
+	"env": {
+		"es2020": true
+	},
+	"extends": [
+		"plugin:react/recommended",
+		"airbnb",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaFeatures": {
+			"jsx": true
+		},
+		"ecmaVersion": 12,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"react",
+		"@typescript-eslint",
+		"eslint-plugin-import-helpers"
+	],
+	"rules": {
+		"consistent-return": "off",
+		"no-tabs":"off",
+		"react/jsx-no-bind": "off",
+		"import/no-unresolved": "error",
+		"camelcase": "off",
+		"no-use-before-define":"off",
+		"react/jsx-props-no-spreading":"off",
+		"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx" ] }],
+		"import/extensions": [
+			"error",
+			"ignorePackages",
+			{
+				"tsx": "never",
+				"ts": "never"
+			}
+		],
+		"import-helpers/order-imports": [
+			"warn",
+			{
+				"newlinesBetween": "always",
+				"groups": [
+					"module",
+					"/^@shared/",
+					[
+						"parent",
+						"sibling",
+						"index"
+					]
+				],
+				"alphabetize": {
+					"order": "asc",
+					"ignoreCase": true
+				}
+			}
+		]
+	},
+	"settings": {
+		"import/resolver": {
+			"typescript": {}
+		}
+	}
+}
